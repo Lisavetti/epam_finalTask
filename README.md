@@ -38,14 +38,14 @@ Ensure you have Node.js and npm installed. Then, run:
 3. **Run the tests**:
 To run the tests, use the WebDriverIO command:
    ```bash
-  npx wdio wdio.conf.js
+   npx wdio wdio.conf.js
 
 
-##Configuration
+## Configuration
 The tests are configured to run on both Chrome and Microsoft Edge. If you encounter issues with the browsers, ensure that the paths to the browser binaries are correctly set in the wdio.conf.js file.
 
-##Known Issues
+## Known Issues
 Chrome Binary Not Found: After installing Microsoft Edge, you might encounter an issue where the Chrome binary cannot be found. This can be resolved by explicitly setting the path to the Chrome binary in the WebDriverIO configuration or by updating your system's PATH environment variable.
 
-##Additional Notes
+## Additional Notes
 The login credentials used for the tests are dynamically fetched from the SauceDemo page, allowing for flexibility and randomness in test execution.

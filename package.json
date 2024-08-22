@@ -7,6 +7,7 @@
     "@wdio/mocha-framework": "^9.0.0",
     "@wdio/spec-reporter": "^9.0.0",
     "chromedriver": "^127.0.3",
+    "mochawesome": "^7.1.3",
     "pino": "^9.3.2",
     "wdio-chromedriver-service": "^8.1.1",
     "wdio-edgedriver-service": "^3.0.3"

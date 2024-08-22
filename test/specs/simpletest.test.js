@@ -1,6 +1,9 @@
+import LoginPage from '../../pageobjects/LoginPage.page.js';
+import { getRandomUsername } from '../../utils/utils.js';
 import pino from 'pino';
 
 const log = pino();
+const loginPage = new LoginPage();
 
 const testCases = [
     {
@@ -9,18 +12,18 @@ const testCases = [
         password: 'test_password',
         clearUsername: true,
         clearPassword: true,
-        expectedError: "Username is required"
+        expectedError: "Epic sadface: Username is required" // Updated to match actual text
     },
     {
         description: "UC-2 Test Login form with credentials by passing Username",
         username: 'test_username',
         password: 'test_password',
         clearPassword: true,
-        expectedError: "Password is required"
+        expectedError: "Epic sadface: Password is required" // Updated to match actual text
     },
     {
         description: "UC-3 Test Login form with credentials by passing Username & Password",
-        randomize: true,  
+        randomize: true,
         expectedTitle: "Swag Labs"
     }
 ];
@@ -31,46 +34,37 @@ describe("Saucedemo login page", () => {
         log.info('Starting SauceDemo login tests...');
     });
 
-    beforeEach(async () => { 
-        await browser.url('https://www.saucedemo.com/');
+    beforeEach(async () => {
+        await browser.url('/');
     });
 
     testCases.forEach(({ description, username, password, clearUsername, clearPassword, expectedError, randomize, expectedTitle }) => {
         it(description, async () => {
             if (randomize) {
-                const username_variants = await $('[data-test="login-credentials"]').getText();
-                const usernames = username_variants
-                    .split('\n')
-                    .slice(1)
-                    .map(username => username.trim());
+                const usernames = await loginPage.getUsernameVariants();
                 username = getRandomUsername(usernames);
-
-                const password_variants = await $('[data-test="login-password"]').getText();
-                password = password_variants.split(':')[1].trim();
+                password = await loginPage.getPasswordVariant();
             }
 
-            await $('[data-test="username"]').setValue(username);
-            await $('[data-test="password"]').setValue(password);
 
             if (clearUsername) {
-                await $('[data-test="username"]').clearValue();
+                await loginPage.clearUsername();
             }
             if (clearPassword) {
-                await $('[data-test="password"]').clearValue();
+                await loginPage.clearPassword();
             }
 
-            await $('[data-test="login-button"]').click();
+            await loginPage.login(username, password);
 
             if (expectedError) {
-                await $('[data-test="error"]').waitForDisplayed();
-                const errMes = await $('[data-test="error"]').getText();
+                const errMes = await loginPage.getErrorMessage();
                 expect(errMes).toHaveText(expectedError);
             }
 
             if (expectedTitle) {
-                await $('.app_logo').waitForDisplayed();
-                const newMes = await $('.app_logo').getText();
-                expect(newMes).toHaveText(expectedTitle);
+                await loginPage.waitForLogo(20000);  // 20 seconds timeout
+                const logoText = await loginPage.logo.getText();
+                expect(logoText).toHaveText(expectedTitle);
             }
         });
     });
@@ -78,9 +72,4 @@ describe("Saucedemo login page", () => {
     after(async () => {
         log.info('All tests completed.');
     });
-
-    function getRandomUsername(usernames) {
-        const randomIndex = Math.floor(Math.random() * usernames.length);
-        return usernames[randomIndex];
-    }
 });
